@@ -7,7 +7,7 @@ const Filter = ({ onFilterChange }) => {
   const [area, setArea] = useState('');
 
   const handleFilterChange = () => {
-    onFilterChange(sector, area); // Passa os filtros para o componente pai
+    onFilterChange(sector, area);
   };
 
   return (
@@ -37,9 +37,6 @@ const Filter = ({ onFilterChange }) => {
 // Componente de Tabela
 const SectorTable = () => {
   const [sector, setSector] = useState([]);
-  const [inputsColumns, setInputsColumn] = useState([]);
-  const [insertedPackage, setInsertedPackage] = useState([]);
-  const [packager, setPackager] = useState([]);
   const [filteredSectors, setFilteredSectors] = useState([]);
   const [sectorFilter, setSectorFilter] = useState('');
   const [areaFilter, setAreaFilter] = useState('');
@@ -54,7 +51,6 @@ const SectorTable = () => {
           return;
         }
 
-        // Configura o cabeçalho com o token de autenticação
         const config = {
           headers: {
             Authorization: `Bearer ${token}`
@@ -62,25 +58,11 @@ const SectorTable = () => {
         };
 
         const response = await axios.get('https://sonil-dev.void.co.mz/api/v4/analytics/farm-inputs/23e9336a-b20a-4478-a58f-875cc065e871?offset=1&limit=10?&filter=&phase=nurseries', config);
-        const { data } = response; 
-
-        const { sectors, inputsColumns } = data.data;
-        console.log("Sectores.......", sectors);
-
-        const { insertedPackages } = sectors[1];
-        console.log("insertedPackages", insertedPackages);
-
-        const { packages } = sectors[0];
-        console.log("Package.......", packages);
-
-        console.log("InputsColumns.......", inputsColumns);
-        console.log("Data.......", data);
+        const { data } = response;
+        const { sectors } = data.data;
 
         setSector(sectors);
-        setInputsColumn(inputsColumns);
-        setInsertedPackage(insertedPackages);
-        setPackager(packages);
-        setFilteredSectors(sectors); // Define a lista inicial de setores
+        setFilteredSectors(sectors);
       } catch (error) {
         console.error('Erro ao buscar os dados:', error);
       }
@@ -90,19 +72,85 @@ const SectorTable = () => {
   }, []);
 
   useEffect(() => {
-    // Filtra os setores baseando-se nos filtros aplicados
     const filtered = sector.filter((sectorItem) => {
       const matchesSector = sectorFilter ? sectorItem.name === sectorFilter : true;
       const matchesArea = areaFilter ? sectorItem.insertedPackages.includes(areaFilter) : true;
       return matchesSector && matchesArea;
     });
     setFilteredSectors(filtered);
-  }, [sectorFilter, areaFilter, sector]);  // Dependências para recarregar o filtro
+  }, [sectorFilter, areaFilter, sector]);
+
+  // Função para garantir que qualquer valor inválido seja tratado como 0
+  const safeValue = (value) => {
+    const numValue = Number(value);  // Conversão explícita para número
+    return isNaN(numValue) ? 0 : numValue;  // Retorna 0 se não for um número válido
+  };
+
+  // Função para calcular o total de distribuídos e recebidos para um pacote específico
+  const calculateWeekTotal = (packages, week) => {
+    let totalDistribuido = 0;
+    let totalRecebido = 0;
+
+    packages.forEach(pkg => {
+      const sentValue = safeValue(pkg.sent);  // Garantir que está pegando o valor correto de sent
+      const receivedValue = safeValue(pkg.received);  // Converte a string para número
+       
+      if (week === 'X') {
+        if (pkg.name === "Semente X") {
+          totalDistribuido += sentValue;
+          totalRecebido += receivedValue;
+        }
+      } else if (week === 'Y') {
+        if (pkg.name === "Semente Y") {
+          totalDistribuido += sentValue;
+          totalRecebido += receivedValue;
+        }
+      }
+    });
+
+    return { totalDistribuido, totalRecebido };
+  };
+
+  // Função para calcular o total geral de todos os setores (semana X e Y)
+  const calculateGrandTotal = (sectors) => {
+    let grandTotalDistribuidoX = 0;
+    let grandTotalRecebidoX = 0;
+    let grandTotalDistribuidoY = 0;
+    let grandTotalRecebidoY = 0;
+
+    sectors.forEach(sectorItem => {
+      const totalsX = calculateWeekTotal(sectorItem.packages, 'X');
+      const totalsY = calculateWeekTotal(sectorItem.packages, 'Y');
+
+      grandTotalDistribuidoX += totalsX.totalDistribuido;
+      grandTotalRecebidoX += totalsX.totalRecebido;
+      grandTotalDistribuidoY += totalsY.totalDistribuido;
+      grandTotalRecebidoY += totalsY.totalRecebido;
+    });
+
+    return {
+      grandTotalDistribuidoX,
+      grandTotalRecebidoX,
+      grandTotalDistribuidoY,
+      grandTotalRecebidoY
+    };
+  };
+
+  const {
+    grandTotalDistribuidoX,
+    grandTotalRecebidoX,
+    grandTotalDistribuidoY,
+    grandTotalRecebidoY
+  } = calculateGrandTotal(filteredSectors);
+
+  // Função para formatar os números sem casas decimais e sem zeros extras
+  const formatNumber = (number) => {
+    return Math.round(safeValue(number));  // Arredonda e remove casas decimais extras
+  };
 
   return (
     <div>
       <h2>Tabela de Setores</h2>
-      {/* Filtro */}
       <Filter onFilterChange={(sector, area) => {
         setSectorFilter(sector);
         setAreaFilter(area);
@@ -117,6 +165,7 @@ const SectorTable = () => {
             <th>Produtor</th>
             <th colSpan="2">Semana X</th>
             <th colSpan="2">Semana Y</th>
+            <th>Total</th> {/* Coluna de Total */}
           </tr>
           <tr>
             <th></th>
@@ -127,71 +176,42 @@ const SectorTable = () => {
             <th>Recebidos</th>
             <th>Distribuídos</th>
             <th>Recebidos</th>
+            <th></th> {/* Coluna de Total vazia */}
           </tr>
         </thead>
         <tbody>
           {filteredSectors.map((sectorItem) => (
             <tr key={sectorItem.name}>
-              {/* Setor, Área, Técnico, Produtor */}
               <td>{sectorItem.name}</td>
               <td>Agricultura</td>
               <td>Técnico X</td>
               <td>Produtor A</td>
 
-              {/* Semana X: Distribuídos e Recebidos */}
-              <td>
-                {sectorItem.packages.map(pkg => {
-                  if (pkg.name === "Semente X") {
-                    return (
-                      <div key={pkg.id}>
-                        {pkg.sent} {/* Distribuídos */}
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </td>
-              <td>
-                {sectorItem.packages.map(pkg => {
-                  if (pkg.name === "Semente X") {
-                    return (
-                      <div key={pkg.id}>
-                        {pkg.received} {/* Recebidos */}
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </td>
+              {/* Semana X */}
+              <td>{formatNumber(sectorItem.packages.reduce((sum, pkg) => sum + (pkg.name === "Semente X" ? safeValue(pkg.sent) : 0), 0))}</td>
+              <td>{formatNumber(sectorItem.packages.reduce((sum, pkg) => sum + (pkg.name === "Semente X" ? safeValue(pkg.received) : 0), 0))}</td>
 
-              {/* Semana Y: Distribuídos e Recebidos */}
+              {/* Semana Y */}
+              <td>{formatNumber(sectorItem.packages.reduce((sum, pkg) => sum + (pkg.name === "Semente Y" ? safeValue(pkg.sent) : 0), 0))}</td>
+              <td>{formatNumber(sectorItem.packages.reduce((sum, pkg) => sum + (pkg.name === "Semente Y" ? safeValue(pkg.received) : 0), 0))}</td>
+
               <td>
-                {sectorItem.packages.map(pkg => {
-                  if (pkg.name === "Semente Y") {
-                    return (
-                      <div key={pkg.id}>
-                        {pkg.sent} {/* Distribuídos */}
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </td>
-              <td>
-                {sectorItem.packages.map(pkg => {
-                  if (pkg.name === "Semente Y") {
-                    return (
-                      <div key={pkg.id}>
-                        {pkg.received} {/* Recebidos */}
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
+                {/* Total Geral para cada setor */}
+                {formatNumber(sectorItem.packages.reduce((sum, pkg) => sum + safeValue(pkg.sent) + safeValue(pkg.received), 0))}
               </td>
             </tr>
           ))}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan="4"><strong>Total Geral</strong></td>
+            <td><strong>{formatNumber(grandTotalDistribuidoX)}</strong></td>
+            <td><strong>{formatNumber(grandTotalRecebidoX)}</strong></td>
+            <td><strong>{formatNumber(grandTotalDistribuidoY)}</strong></td>
+            <td><strong>{formatNumber(grandTotalRecebidoY)}</strong></td>
+            <td><strong>{formatNumber(grandTotalDistribuidoX + grandTotalRecebidoX + grandTotalDistribuidoY + grandTotalRecebidoY)}</strong></td> {/* Total Geral */}
+          </tr>
+        </tfoot>
       </table>
     </div>
   );
