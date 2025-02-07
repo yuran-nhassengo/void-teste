@@ -7,17 +7,17 @@ const Filter = ({ onFilterChange }) => {
 
   const handlePesquisaChange = (e) => {
     setPesquisa(e.target.value);
-    onFilterChange(e.target.value, sector, area); // Atualiza o filtro
+    onFilterChange(e.target.value, sector, area); 
   };
 
   const handleSectorChange = (e) => {
     setSector(e.target.value);
-    onFilterChange(pesquisa, e.target.value, area); // Atualiza o filtro
+    onFilterChange(pesquisa, e.target.value, area); 
   };
 
   const handleAreaChange = (e) => {
     setArea(e.target.value);
-    onFilterChange(pesquisa, sector, e.target.value); // Atualiza o filtro
+    onFilterChange(pesquisa, sector, e.target.value); 
   };
 
   return (
@@ -33,7 +33,7 @@ const Filter = ({ onFilterChange }) => {
       <div>
         {/* Primeiro select - Sector */}
         <select value={sector} onChange={handleSectorChange}>
-          <option value="Todos">Todos Sectores</option>
+          <option value="">Todos Sectores</option>
           <option value="Ribaue">Ribaue</option>
           <option value="Malema">Malema</option>
         </select>
@@ -42,7 +42,7 @@ const Filter = ({ onFilterChange }) => {
       <div>
         {/* Segundo select - Área */}
         <select value={area} onChange={handleAreaChange}>
-          <option value="Todas">Todas Areas</option>
+          <option value="">Todas Areas</option>
           <option value="Lalaue">Lalaue</option>
           <option value="Satique">Satique</option>
         </select>
