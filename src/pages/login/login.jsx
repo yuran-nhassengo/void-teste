@@ -1,214 +1,118 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";  // Certifique-se que o caminho está correto
+import { useAuth } from "../context/AuthContext";  
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import axios from "axios";  // Usando axios diretamente
+import axios from "axios";  
 import Cookies from "js-cookie";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);  // Estado para controlar o carregamento
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    setLoading(true); // Ativa o estado de carregamento
+
     try {
-      // Verificando se os valores de email e password estão corretos
-      console.log("Email:", email);
-      console.log("Password:", password);
-  
-      // Enviando a requisição com os dados
       const response = await axios.post(
         "https://sonil-dev.void.co.mz/api/v4/users/login",
         {
-          username: email,  // email sendo passado como 'username'
+          username: email, 
           password: password
         }
       );
-    
-      // Exibindo a resposta da API para verificar se o login foi bem-sucedido
-      console.log("Response data:", response.data);
-  
-      // Salvando o token no localStorage
+
       const { token, user } = response.data.data;
-      console.log("token",response.data.data.user);
-      localStorage.setItem("token", token);  // Usando setItem corretamente para salvar no localStorage
-    
-      // Chamando a função login do contexto
-      login(user,token); 
-     let userRole=''
-      if (user.type && user.type.length > 0) {
-         userRole = user.type[0].trim(); // Usando trim apenas se for uma string
-        console.log(userRole);
-      } else {
-        console.log("Nenhum tipo de usuário encontrado.");
+      localStorage.setItem("token", token);
+      login(user, token); 
+
+      console.log(user);
+
+      let userRole = user.type[0] || '';
+      if (userRole && typeof userRole === 'string') {
+        userRole = userRole.trim();
       }
 
-  console.log("Mais um role",userRole);
-      // Redirecionamento com base no papel do usuário
-      if (userRole ==="superAdmin" || userRole === "super-admin") {
-        console.log("admin e ")
+      if (userRole === "superAdmin" || userRole === "super-admin") {
         navigate("/home");
       } else if (userRole === "graduated" || userRole === "teacher") {
         navigate("/home");
       }
     } catch (error) {
-      // Exibindo erros detalhados
       if (error.response) {
-        console.error("Erro na resposta da API:", error.response.data);
         setError(error.response.data.errors?.[0]?.msg || "Erro ao fazer login.");
       } else {
-        console.error("Erro no login:", error);
         setError("Erro ao fazer login. Verifique suas credenciais.");
       }
+    } finally {
+      setLoading(false); // Desativa o estado de carregamento após a requisição
     }
   };
-  
-  
 
   return (
-    <div>
-      <div className="login-container">
-        <motion.div
-          className="login-form"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <h2>Bem-vindo ao <span>Void!</span></h2>
-          <h3>Faça seu Login para continuar.</h3>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <motion.div
+        className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+      >
+        <h2 className="text-2xl font-semibold text-center text-blue-600 mb-4">Bem-vindo ao <span className="text-blue-800">Void!</span></h2>
+        <h3 className="text-center text-gray-600 mb-6">Faça seu Login para continuar.</h3>
 
-          <form onSubmit={handleSubmit}>
-            {/* Campo de E-mail */}
-            <div>
-              <label htmlFor="email">E-mail</label>
-              <input
-                id="email"
-                type="text"
-                placeholder="Digite seu e-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Campo de E-mail */}
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">E-mail</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Digite seu e-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 p-3 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-            {/* Campo de Senha */}
-            <div>
-              <label htmlFor="password">Senha</label>
-              <input
-                id="password"
-                type="password"
-                placeholder="Digite sua senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+          {/* Campo de Senha */}
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Senha</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Digite sua senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 p-3 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-            {/* Exibindo erros */}
-            {error && <p className="error-message">{error}</p>}
+          {/* Exibindo erros */}
+          {error && <p className="text-sm text-red-500">{error}</p>}
 
-            {/* Botão de Login */}
-            <div>
-              <button type="submit" className="login-button">
-                Entrar
-              </button>
-            </div>
+          {/* Botão de Login */}
+          <div>
+            <button 
+              type="submit"
+              className="w-full py-3 mt-4 hover:cursor-pointer bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-300"
+              disabled={loading} // Desativa o botão durante o carregamento
+            >
+              {loading ? 'Enviando...' : 'Entrar'} {/* Exibe 'Enviando...' durante o carregamento */}
+            </button>
+          </div>
 
-            {/* Links de navegação */}
-            <div className="navigation-links">
-              <Link to="/forgot-password">Esqueceu sua senha?</Link>
-              <Link to="/cadastro">Não tem uma conta? Cadastre-se</Link>
-            </div>
-          </form>
-        </motion.div>
-      </div>
-
-      {/* Adicione estilos CSS abaixo */}
-      <style jsx>{`
-        .login-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          background-color: #f5f5f5;
-        }
-
-        .login-form {
-          background-color: #fff;
-          padding: 20px;
-          border-radius: 10px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          width: 100%;
-          max-width: 400px;
-        }
-
-        .login-form h2 {
-          font-size: 24px;
-          font-weight: bold;
-          text-align: center;
-        }
-
-        .login-form h3 {
-          font-size: 18px;
-          font-weight: 500;
-          text-align: center;
-          margin-bottom: 20px;
-        }
-
-        .login-form label {
-          display: block;
-          font-size: 14px;
-          margin-bottom: 8px;
-        }
-
-        .login-form input {
-          width: 100%;
-          padding: 10px;
-          margin-bottom: 15px;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-          font-size: 14px;
-        }
-
-        .login-button {
-          width: 100%;
-          padding: 12px;
-          background-color: #007bff;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-          font-size: 16px;
-        }
-
-        .login-button:hover {
-          background-color: #0056b3;
-        }
-
-        .error-message {
-          color: red;
-          text-align: center;
-          margin-top: 10px;
-        }
-
-        .navigation-links {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 20px;
-        }
-
-        .navigation-links a {
-          color: #007bff;
-          text-decoration: none;
-        }
-
-        .navigation-links a:hover {
-          text-decoration: underline;
-        }
-      `}</style>
+          {/* Links de navegação */}
+          <div className="flex justify-between text-sm text-blue-600 mt-4">
+            <Link to="/forgot-password" className="hover:text-blue-800">Esqueceu sua senha?</Link>
+            <Link to="/cadastro" className="hover:text-blue-800">Não tem uma conta? Cadastre-se</Link>
+          </div>
+        </form>
+      </motion.div>
     </div>
   );
 };

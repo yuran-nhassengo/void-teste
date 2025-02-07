@@ -22,41 +22,48 @@ const Filter = ({ onFilterChange }) => {
   };
 
   return (
-    <div>
-      {/* Campo de pesquisa */}
-      <input 
-        type="text" 
-        placeholder="Pesquisar por....." 
-        value={pesquisa}
-        onChange={handlePesquisaChange}
-      />
+    <div className='flex justify-between space-x-2'>
 
-    <div>
-        {/* Primeiro select - Sector */}
-        <select >
-          <option value="">Registo</option>
-          <option value="01">Registo 01</option>
-          <option value="02">Registo 02</option>
-        </select>
-      </div>
+        
+        <div >
+         
+          <input className='border-2 rounded-sm'
+            type="text" 
+            placeholder="Pesquisar por....." 
+            value={pesquisa}
+            onChange={handlePesquisaChange}
+          />
+          
+          </div>
 
-      <div>
-        {/* Primeiro select - Sector */}
-        <select value={sector} onChange={handleSectorChange}>
-          <option value="">Seleciona o Sector</option>
-          <option value="Ribaue">Ribaue</option>
-          <option value="Malema">Malema</option>
-        </select>
-      </div>
+          <div>
+        
+            <select className='border-2 rounded-sm'>
+              <option value="">Registo</option>
+              <option value="01">Registo 01</option>
+              <option value="02">Registo 02</option>
+            </select>
+          </div>
 
-      <div>
-        {/* Segundo select - Área */}
-        <select value={area} onChange={handleAreaChange}>
-          <option value="">Seleciona a area</option>
-          <option value="Lalaue">Lalaue</option>
-          <option value="Satique">Satique</option>
-        </select>
-      </div>
+          <div >
+           
+            <select className='border-2 rounded-sm'value={sector} onChange={handleSectorChange}>
+              <option value="">Seleciona o Sector</option>
+              <option value="Ribaue">Ribaue</option>
+              <option value="Malema">Malema</option>
+            </select>
+          </div>
+
+          <div >
+          
+            <select className='border-2 rounded-sm' value={area} onChange={handleAreaChange}>
+              <option value="">Seleciona a area</option>
+              <option value="Lalaue">Lalaue</option>
+              <option value="Satique">Satique</option>
+            </select>
+          </div>
+    
+
     </div>
   );
 };

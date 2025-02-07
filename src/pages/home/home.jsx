@@ -17,7 +17,7 @@ const Home = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div className="home-container">
+    <div className="max-w-xl">
       <h1>Bem-vindo à Home!</h1>
       <p>Tabela Progress.</p>
       <ProgressTable/>

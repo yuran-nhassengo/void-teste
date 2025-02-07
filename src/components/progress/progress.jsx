@@ -104,13 +104,14 @@ const ProgressTable = () => {
   };
 
   return (
-    <div>
-      <Filter onFilterChange={(pesquisa, sector, area) => {
-        setPesquisa(pesquisa);
-        setSector(sector);
-        setArea(area);
-      }} />
-
+    <div >
+      <div>
+        <Filter onFilterChange={(pesquisa, sector, area) => {
+          setPesquisa(pesquisa);
+          setSector(sector);
+          setArea(area);
+        }} />
+      </div>
       <table>
         <thead>
           <tr>

@@ -11,10 +11,9 @@ const Filter = ({ onFilterChange }) => {
   };
 
   return (
-    <div>
+    <div className='flex space-x-2'>
       <div>
-        <label>Setor:</label>
-        <select onChange={(e) => setSector(e.target.value)} value={sector}>
+        <select className='border-2 rounded-b-sm' onChange={(e) => setSector(e.target.value)} value={sector}>
           <option value="">Selecione um Setor</option>
           <option value="Lalaue">Lalaue</option>
           <option value="Malema">Malema</option>
@@ -22,14 +21,14 @@ const Filter = ({ onFilterChange }) => {
         </select>
       </div>
       <div>
-        <label>Área:</label>
-        <select onChange={(e) => setArea(e.target.value)} value={area}>
+        <select className='border-2 rounded-b-sm' onChange={(e) => setArea(e.target.value)} value={area}>
           <option value="">Selecione uma Área</option>
           <option value="Agricultura">Agricultura</option>
           <option value="Comércio">Comércio</option>
         </select>
       </div>
-      <button onClick={handleFilterChange}>Filtrar</button>
+      <button className=" hover:cursor-pointer  bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-300"
+      onClick={handleFilterChange}>Filtrar</button>
     </div>
   );
 };
@@ -149,8 +148,7 @@ const SectorTable = () => {
   };
 
   return (
-    <div>
-      <h2>Tabela de Setores</h2>
+    <div >
       <Filter onFilterChange={(sector, area) => {
         setSectorFilter(sector);
         setAreaFilter(area);
