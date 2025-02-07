@@ -44,7 +44,22 @@ const SectorTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://sonil-dev.void.co.mz/api/v4/analytics/farm-inputs/23e9336a-b20a-4478-a58f-875cc065e871?offset=1&limit=10&filter=&phase=nurseries');
+
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+          console.error('Token não encontrado no localStorage');
+          return;
+        }
+
+        // Configura o cabeçalho com o token de autenticação
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        };
+
+        const response = await axios.get('https://sonil-dev.void.co.mz/api/v4/analytics/farm-inputs/23e9336a-b20a-4478-a58f-875cc065e871?offset=1&limit=10&filter=&phase=nurseries',config);
         const data = response.data.data;
         setSectors(data.sectors);
         setFilteredSectors(data.sectors);
