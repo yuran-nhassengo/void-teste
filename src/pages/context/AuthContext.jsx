@@ -31,24 +31,21 @@ export const AuthProvider = ({ children }) => {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const access_token = localStorage.getItem('token'); // Pegando o token do localStorage
+    const access_token = localStorage.getItem('token'); 
 
     if (!access_token) {
-      setLoading(false); // Se não houver token, finaliza o loading
+      setLoading(false); 
       return;
     }
 
     setIsAuthenticated(true);
 
-    // Se houver token, não vamos verificar com o back-end nesse momento, 
-    // já que o login depende da rota específica
-    setLoading(false); // Finaliza o loading depois da verificação
+    
+    setLoading(false); 
   }, []);
 
   const login = (user,token) => {
-    // Fazendo a requisição para autenticar o usuário
-        
-        // Armazenando o token e informações do usuário nos estados
+   
         setIsAuthenticated(true);
         setUserRole(user.type); // O tipo do usuário
         setUsername(user.fullname); // O nome completo
