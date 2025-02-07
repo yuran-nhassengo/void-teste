@@ -86,6 +86,23 @@ const ProgressTable = () => {
     return diferenca <= seteDiasEmMs;
   };
 
+  // Função para calcular o total por semana para todos os técnicos
+  const getTotalForWeek = (week) => {
+    return filteredTechnicians.reduce((total, technician) => {
+      const totalRecordsForWeek = technician.weeks
+        .filter((w) => {
+          const weekStartDate = w.week_start;
+          const weekDate = week; // A data da semana
+          // Verifica se as semanas são a mesma
+          const isSameWeek = mesmaSemana(weekStartDate, weekDate);
+          return isSameWeek;
+        })
+        .reduce((total, w) => total + w.total_records, 0); // Soma os records dessa semana
+
+      return total + totalRecordsForWeek;
+    }, 0); // Soma o total para todos os técnicos
+  };
+
   return (
     <div>
       <Filter onFilterChange={(pesquisa, sector, area) => {
@@ -103,6 +120,7 @@ const ProgressTable = () => {
             {weeks.map((week, index) => (
               <th key={index}>Semana {index + 1}</th>
             ))}
+            <th>Total</th> {/* Coluna total */}
           </tr>
         </thead>
         <tbody>
@@ -133,6 +151,19 @@ const ProgressTable = () => {
             </tr>
           ))}
         </tbody>
+        {/* Linha total das semanas */}
+        <tfoot>
+          <tr>
+            <td colSpan={3}>Total por Semana</td>
+            {weeks.map((week, index) => (
+              <td key={index}>
+                {/* Exibe o total de cada semana */}
+                {getTotalForWeek(week)}
+              </td>
+            ))}
+            <td></td> {/* Coluna de total geral, se necessário */}
+          </tr>
+        </tfoot>
       </table>
     </div>
   );
