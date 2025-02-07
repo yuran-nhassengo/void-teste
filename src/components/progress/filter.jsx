@@ -26,7 +26,7 @@ const Filter = ({ onFilterChange }) => {
       {/* Campo de pesquisa */}
       <input 
         type="text" 
-        placeholder="Pesquisar Técnico" 
+        placeholder="Pesquisar por....." 
         value={pesquisa}
         onChange={handlePesquisaChange}
       />

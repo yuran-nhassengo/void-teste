@@ -86,7 +86,7 @@ const ProgressTable = () => {
     return diferenca <= seteDiasEmMs;
   };
 
-  // Função para calcular o total por semana para todos os técnicos
+  // Função para calcular o total de uma semana específica para todos os técnicos
   const getTotalForWeek = (week) => {
     return filteredTechnicians.reduce((total, technician) => {
       const totalRecordsForWeek = technician.weeks
@@ -120,50 +120,43 @@ const ProgressTable = () => {
             {weeks.map((week, index) => (
               <th key={index}>Semana {index + 1}</th>
             ))}
-            <th>Total</th> {/* Coluna total */}
           </tr>
         </thead>
         <tbody>
-          {filteredTechnicians.map((technician) => (
-            <tr key={technician.technician_id}>
-              <td>{technician.sector}</td>
-              <td>{technician.area_name}</td>
-              <td>{technician.technician_name}</td>
-              
-              {weeks.map((week) => {
-                const totalRecordsForWeek = technician.weeks
-                  .filter((w) => {
-                    const weekStartDate = w.week_start;
-                    const weekDate = week; // A data da semana
+          {filteredTechnicians.map((technician) => {
+            let accumulatedTotal = 0; // Variável para manter o total acumulado
+            return (
+              <tr key={technician.technician_id}>
+                <td>{technician.sector}</td>
+                <td>{technician.area_name}</td>
+                <td>{technician.technician_name}</td>
+                
+                {weeks.map((week, index) => {
+                  const totalRecordsForWeek = technician.weeks
+                    .filter((w) => {
+                      const weekStartDate = w.week_start;
+                      const weekDate = week; // A data da semana
 
-                    // Verifica se as semanas são a mesma
-                    const isSameWeek = mesmaSemana(weekStartDate, weekDate);
-                    return isSameWeek;
-                  })
-                  .reduce((total, w) => total + w.total_records, 0);
+                      // Verifica se as semanas são a mesma
+                      const isSameWeek = mesmaSemana(weekStartDate, weekDate);
+                      return isSameWeek;
+                    })
+                    .reduce((total, w) => total + w.total_records, 0);
 
-                return (
-                  <td key={week}>
-                    {totalRecordsForWeek || 0}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
+                  accumulatedTotal += totalRecordsForWeek; // Atualiza o total acumulado
+
+                  return (
+                    <td key={week}>
+                      {totalRecordsForWeek || 0}
+                      |
+                      <strong>{accumulatedTotal}</strong> {/* Exibe o total acumulado */}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
-        {/* Linha total das semanas */}
-        <tfoot>
-          <tr>
-            <td colSpan={3}>Total por Semana</td>
-            {weeks.map((week, index) => (
-              <td key={index}>
-                {/* Exibe o total de cada semana */}
-                {getTotalForWeek(week)}
-              </td>
-            ))}
-            <td></td> {/* Coluna de total geral, se necessário */}
-          </tr>
-        </tfoot>
       </table>
     </div>
   );
