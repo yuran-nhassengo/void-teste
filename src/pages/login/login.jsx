@@ -79,7 +79,7 @@ const Login = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h2>Bem-vindo ao <span>IABil!</span></h2>
+          <h2>Bem-vindo ao <span>Void!</span></h2>
           <h3>Faça seu Login para continuar.</h3>
 
           <form onSubmit={handleSubmit}>

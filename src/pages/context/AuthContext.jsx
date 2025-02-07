@@ -38,6 +38,8 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
+    setIsAuthenticated(true);
+
     // Se houver token, não vamos verificar com o back-end nesse momento, 
     // já que o login depende da rota específica
     setLoading(false); // Finaliza o loading depois da verificação

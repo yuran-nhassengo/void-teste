@@ -4,6 +4,7 @@ import { useAuth } from '../pages/context/AuthContext'; // Importa o hook de aut
 
 // Componente para proteger rotas
 const ProtectedRoute = ({ children }) => {
+    
   const { isAuthenticated } = useAuth();
 
   console.log("Chegou no protected")

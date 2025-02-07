@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import ProgressTable from '../../components/progress';
+import ProgressTable from '../../components/progress/progress';
+import Filter from '../../components/progress/filter';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
