@@ -62,7 +62,7 @@ const Login = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <h2 className="text-2xl font-semibold text-center text-blue-600 mb-4">Bem-vindo ao <span className="text-blue-800">Void!</span></h2>
+        <h2 className="text-2xl font-semibold text-center text-blue-600 mb-4">Bem-vindo ao <span className="text-pink-500">Void!</span></h2>
         <h3 className="text-center text-gray-600 mb-6">Faça seu Login para continuar.</h3>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -99,7 +99,7 @@ const Login = () => {
           <div>
             <button 
               type="submit"
-              className="w-full py-3 mt-4 hover:cursor-pointer bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-300"
+              className="w-full py-3 mt-4 hover:cursor-pointer bg-pink-500 text-white font-semibold rounded-md hover:bg-pink-300 transition duration-300"
               disabled={loading} // Desativa o botão durante o carregamento
             >
               {loading ? 'Enviando...' : 'Entrar'} {/* Exibe 'Enviando...' durante o carregamento */}

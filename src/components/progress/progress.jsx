@@ -104,7 +104,7 @@ const ProgressTable = () => {
   };
 
   return (
-    <div >
+    <div className='max-w-xl'>
       <div>
         <Filter onFilterChange={(pesquisa, sector, area) => {
           setPesquisa(pesquisa);

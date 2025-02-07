@@ -17,8 +17,8 @@ const Home = () => {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div className="max-w-xl">
-      <h1>Bem-vindo à Home!</h1>
+    <div className="max-w-xl m-5">
+      <h1 className='flex items-center justify-center text-pink-500'>Bem-vindo à Home!</h1>
       <p>Tabela Progress.</p>
       <ProgressTable/>
       <p>Tabela Sectores.</p>
