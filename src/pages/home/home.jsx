@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProgressTable from '../../components/progress/progress';
 import Filter from '../../components/progress/filter';
+import SectorTable from '../../components/Insumos/sector';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
@@ -18,8 +19,10 @@ const Home = () => {
   return (
     <div className="home-container">
       <h1>Bem-vindo à Home!</h1>
-      <p>Você está autenticado e agora na página inicial.</p>
+      <p>Tabela Progress.</p>
       <ProgressTable/>
+      <p>Tabela Sectores.</p>
+      <SectorTable/>
     </div>
   );
 };
