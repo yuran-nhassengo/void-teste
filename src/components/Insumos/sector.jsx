@@ -36,15 +36,17 @@ const Filter = ({ onFilterChange }) => {
 
 // Componente de Tabela
 const SectorTable = () => {
-  const [sectors, setSectors] = useState([]);
+  const [sector, setSector] = useState([]);
+  const [inputsColumns, setInputsColumn] = useState([]);
+  const [insertedPackage, setInsertedPackage] = useState([]);
+  const [packager, setPackager] = useState([]);
   const [filteredSectors, setFilteredSectors] = useState([]);
   const [sectorFilter, setSectorFilter] = useState('');
-  const [areaFilter, setAreaFilter] = useState([]);
+  const [areaFilter, setAreaFilter] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-
         const token = localStorage.getItem('token');
         
         if (!token) {
@@ -59,10 +61,26 @@ const SectorTable = () => {
           }
         };
 
-        const response = await axios.get('https://sonil-dev.void.co.mz/api/v4/analytics/farm-inputs/23e9336a-b20a-4478-a58f-875cc065e871?offset=1&limit=10&filter=&phase=nurseries',config);
-        const data = response.data.data;
-        setSectors(data.sectors);
-        setFilteredSectors(data.sectors);
+        const response = await axios.get('https://sonil-dev.void.co.mz/api/v4/analytics/farm-inputs/23e9336a-b20a-4478-a58f-875cc065e871?offset=1&limit=10?&filter=&phase=nurseries', config);
+        const { data } = response; 
+
+        const { sectors, inputsColumns } = data.data;
+        console.log("Sectores.......", sectors);
+
+        const { insertedPackages } = sectors[1];
+        console.log("insertedPackages", insertedPackages);
+
+        const { packages } = sectors[0];
+        console.log("Package.......", packages);
+
+        console.log("InputsColumns.......", inputsColumns);
+        console.log("Data.......", data);
+
+        setSector(sectors);
+        setInputsColumn(inputsColumns);
+        setInsertedPackage(insertedPackages);
+        setPackager(packages);
+        setFilteredSectors(sectors); // Define a lista inicial de setores
       } catch (error) {
         console.error('Erro ao buscar os dados:', error);
       }
@@ -72,13 +90,14 @@ const SectorTable = () => {
   }, []);
 
   useEffect(() => {
-    const filtered = sectors.filter((sector) => {
-      const matchesSector = sectorFilter ? sector.name === sectorFilter : true;
-      const matchesArea = areaFilter ? sector.insertedPackages.includes(areaFilter) : true;
+    // Filtra os setores baseando-se nos filtros aplicados
+    const filtered = sector.filter((sectorItem) => {
+      const matchesSector = sectorFilter ? sectorItem.name === sectorFilter : true;
+      const matchesArea = areaFilter ? sectorItem.insertedPackages.includes(areaFilter) : true;
       return matchesSector && matchesArea;
     });
     setFilteredSectors(filtered);
-  }, [sectorFilter, areaFilter, sectors]);
+  }, [sectorFilter, areaFilter, sector]);  // Dependências para recarregar o filtro
 
   return (
     <div>
@@ -111,17 +130,17 @@ const SectorTable = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredSectors.map((sector) => (
-            <tr key={sector.name}>
+          {filteredSectors.map((sectorItem) => (
+            <tr key={sectorItem.name}>
               {/* Setor, Área, Técnico, Produtor */}
-              <td>{sector.name}</td>
+              <td>{sectorItem.name}</td>
               <td>Agricultura</td>
               <td>Técnico X</td>
               <td>Produtor A</td>
 
               {/* Semana X: Distribuídos e Recebidos */}
               <td>
-                {sector.packages.map(pkg => {
+                {sectorItem.packages.map(pkg => {
                   if (pkg.name === "Semente X") {
                     return (
                       <div key={pkg.id}>
@@ -133,7 +152,7 @@ const SectorTable = () => {
                 })}
               </td>
               <td>
-                {sector.packages.map(pkg => {
+                {sectorItem.packages.map(pkg => {
                   if (pkg.name === "Semente X") {
                     return (
                       <div key={pkg.id}>
@@ -147,7 +166,7 @@ const SectorTable = () => {
 
               {/* Semana Y: Distribuídos e Recebidos */}
               <td>
-                {sector.packages.map(pkg => {
+                {sectorItem.packages.map(pkg => {
                   if (pkg.name === "Semente Y") {
                     return (
                       <div key={pkg.id}>
@@ -159,7 +178,7 @@ const SectorTable = () => {
                 })}
               </td>
               <td>
-                {sector.packages.map(pkg => {
+                {sectorItem.packages.map(pkg => {
                   if (pkg.name === "Semente Y") {
                     return (
                       <div key={pkg.id}>
